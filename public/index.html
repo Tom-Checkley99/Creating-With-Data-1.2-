@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Coffee Research</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+</head>
+
+<body>
+
+   <h1>Tom Checkley - Coffee Research</h1>   <!-- title of the page --> 
+
+   <h2> Data: </h2>   <!--subheading -->
+
+  <p><label for="coffees">How many coffees have you had today?</label> <br>   <!--  Input question -->
+     <input type="range" id="coffees" min="0" max="10" value="5" oninput="sliderChange(this.value)">  <!-- shows the id and the amount that the slider can move -->
+     <output id="sliderVal"> </output> <br>  <!--output slider id -->
+  </p>
+
+
+   <p><label for="coffees">How tired do you feel today on a scale of 0-10?</label> <br>  <!-- Input Question -->
+     <input type="range" id="tiredness" min="0" max="10" value="5" oninput="sliderChange2(this.value)"> <!-- shows the id and the amount that the slider can move -->
+     <output id="sliderVal2"> </output> <br>    <!--output slider id -->
+    <button id="submit">submit data</button>   <!-- Submit button -->
+    </p>
+  <p>
+
+  <h2>Key:</h2>   <!-- subheading -->
+  <p>The lighter the colour the healthier the day!</p>  <!-- paragrapgh text -->
+  <img src="key.jpg" alt="Colour Key">   <!--inserting key image -->
+
+
+  <p>
+    <canvas id="chart" width="600" height="400"></canvas>  <!--creating canvas-->
+  </p>
+
+  <script>
+
+
+    let myChart // declaring variable myChart
+
+
+    function sliderChange(val) {   // calling function sliderChange(val)
+      document.getElementById('sliderVal').innerHTML = val; // telling it to get the silderVal elements
+    }
+
+     function sliderChange2(val) {  // calling function sliderChnage2(val)
+         document.getElementById('sliderVal2').innerHTML = val; // telling it to get the silderVal2 elements
+     }
+
+
+    async function chartIt() { // async creates a promise ofr funtion chartIt()
+
+      let xVals = [];   // declaring variable xVals in an aray
+      let yVals = [];   // declaring variable yVals in an aray
+      let yValstiredness = [];  // declaring variable xValstiredness in an aray
+      let tirednessColor = [];  // declaring variable tirednessColor in an aray
+
+      const repsonse = await fetch('/api'); // suspend the code from being run until promise is resolved
+      const data = await repsonse.json();   // waiting for a repsonse from client-server side to create an object
+
+      for (let i = 0; i < data.length; i++) { // for loop created by using data
+
+        let mydate = new Date(data[i].timestamp); // declaring mydata creates new data based on data array and timestamp
+
+
+
+        xVals[i] = mydate.getUTCDate() + "-" + mydate.getUTCMonth(); // Using data.coffee log the date of month and the month
+
+
+        yVals[i] = data[i].coffees;                   // log data in y axis with coffee data 
+        yValstiredness[i] = data[i].tiredness;        // log tiredness in y axis 
+
+        if (data[i].coffees == 0) {                   // if statement saying if coffee is 0, tiredness colour to be ... 
+          tirednessColor[i] = 'rgb(52, 235, 76)';
+          } else if (data[i].coffees == 1) {          // if statement saying if coffee is 1, tiredness colour to be ...
+          tirednessColor[i] = 'rgb(52, 235, 150)';
+       } else if (data[i].coffees == 2) {             // if statement saying if coffee is 2, tiredness colour to be ...
+          tirednessColor[i] = 'rgb(52, 235, 201)';
+        } else if (data[i].coffees == 3) {            // if statement saying if coffee is 3, tiredness colour to be ...
+          tirednessColor[i] = 'rgb(52, 229, 235)';
+        } else if (data[i].coffees == 4) {            // if statement saying if coffee is 4, tiredness colour to be ...
+         tirednessColor[i] = 'rgb(52, 162, 235)';
+        } else if (data[i].coffees == 5) {            // if statement saying if coffee is 5, tiredness colour to be ...
+          tirednessColor[i] = 'rgb(52, 73, 235)'; 
+        } else if (data[i].coffees == 6) {            // if statement saying if coffee is 6, tiredness colour to be ...
+          tirednessColor[i] = 'rgb(119, 52, 235)';
+        } else if (data[i].coffees == 7) {            // if statement saying if coffee is 7, tiredness colour to be ...
+          tirednessColor[i] = 'rgb(204, 52, 235)';
+        } else if (data[i].coffees == 8) {            // if statement saying if coffee is 8, tiredness colour to be ...
+          tirednessColor[i] = 'rgb(235, 52, 214)';
+        } else if (data[i].coffees == 9) {            // if statement saying if coffee is 9, tiredness colour to be ...
+          tirednessColor[i] = 'rgb(235, 52, 147)';
+        } else if (data[i].coffees == 10) {           // if statement saying if coffee is 10, tiredness colour to be ...
+          tirednessColor[i] = 'rgb(235, 52, 52)';
+       }
+      }
+
+
+      let options = {                                 // declaring the options for the grapgh 
+
+        legend:{                                      // creates a discriptive layer of labels 
+          display: false},                            // display false 
+
+          scales: {                                   // scales of what we are working with 
+              xAxes: [{                               // x axis then array of info 
+
+                  scaleLabel: {                       // adding lable to data / graph
+                  display: true,                      // diaply true 
+                  labelString: 'Days Of The Week'     // lable this feature 'Days of the Week" 
+                } ,             
+
+                  gridLines: {                        // addresses gridlines 
+                    display:false,                    // display false 
+                      offsetGridLines: true           // offset the gridlines is called true 
+                  }
+              }] ,
+
+              yAxes: [{                               // y axis then array of info 
+                position:'left',                      // where to postision y axis 
+                scaleLabel:{                          // adding lable to the data / graph
+                  display: true,                      // display true 
+                  labelString: 'Number Of Coffees'    // lable this feature "Number of Coffees"
+                },
+                ticks:{                               // editing the scale 
+                  max:10,                             // maximum 10
+                  min:0                               // minimum 0
+                }
+
+              }]
+          }
+      };
+
+
+
+
+      const ctx = document.getElementById('chart').getContext('2d');  // draw in the chart with element id's 
+
+  if(!myChart){                                 // if my chart  
+
+        myChart = new Chart(ctx, {              // create new chart 
+        type: 'bar',                            // bar graph 
+        data: {                                 // log data 
+          labels: xVals,                        // in xVals 
+          datasets: [                           // in the dataset of 
+            {
+            label: 'tiredness',                 // called tiredness
+            data: yValstiredness,               // using data yValstiredness
+            type:'line',                        // line graph 
+            fill: false,                        // fill none/false 
+            backgroundColor: tirednessColor,    // background colour to set as tirednessColor
+            borderColor: 'black',               // border Color set to black
+            borderWidth: 1                      // boreder width set to 1
+          },    
+          {
+            label: 'Number of Coffees',         // lables "Number of Coffees"
+            data: yVals,                        // log data in yVals
+            fill: false,                        // fill none/false
+            backgroundColor: tirednessColor,    // background colour set to tirednessColor
+            borderColor: 'black',               // border Color set to black
+            borderWidth: 1                      // boreder width set to 1
+          }
+
+
+
+        ]
+        },
+        options:options                         // repeat options over options 
+
+
+
+      });
+
+      }else{                                    // or else 
+
+
+
+      myChart.data.labels = xVals;                                  // lable data on xVals
+      myChart.data.datasets[0].data= yVals;                         // dataset from yVals
+      myChart.data.datasets[0].backgroundColor = tirednessColor;    // dataset background colour to tiredness colour 
+
+      myChart.data.datasets[1].data= yValstiredness;                // datasets loged in yValstiredness
+      myChart.data.datasets[1].backgroundColor = tirednessColor;    // datasets background colour equals tiredness colour 
+
+
+
+      myChart.update();                                           // update my chart 
+
+      }
+
+
+
+
+
+    }
+
+
+    chartIt();                                                  // log data to chart it 
+
+    const buttonSubmit = document.getElementById('submit');     // when submit button pressed log data element by ID 
+
+    buttonSubmit.addEventListener('click', async event => {     // in the event of button submission load the edit 
+
+
+      const coffees = document.getElementById('coffees').value;     // use the coffee data to log as 'coffees'
+
+      const tiredness = document.getElementById('tiredness').value; // use tiredness to log data as 'tiredness'
+
+
+
+      const data = { coffees, tiredness  };         // using data from coffees and tiredness 
+      const options = {                             // call options 
+        method: 'POST',                             // create a new data post 
+        headers: {                                  // in the type of 
+          'Content-Type': 'application/json'        // create application.json
+        },
+        body: JSON.stringify(data)                  // in the body create a json string of data
+      };
+      const response = await fetch('/api', options);    // waiting for repsonse from the API and options 
+      const json = await response.json();               // awaiting fetch create a response in the form of json 
+      console.log(json);                                // console log to track data  
+
+
+      chartIt();                                        // create new chartIt
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+  </script>
+</body>
+
+</html>
